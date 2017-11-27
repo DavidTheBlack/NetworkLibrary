@@ -1,0 +1,17 @@
+c:\users\david\documents\visual studio 2013\Projects\NetworkLibrary\NetworkLibrary\obj\Debug\NetworkLibrary.csprojResolveAssemblyReference.cache
+c:\users\david\documents\visual studio 2013\Projects\NetworkLibrary\NetworkLibrary\bin\Debug\NetworkLibrary.dll
+c:\users\david\documents\visual studio 2013\Projects\NetworkLibrary\NetworkLibrary\bin\Debug\NetworkLibrary.pdb
+c:\users\david\documents\visual studio 2013\Projects\NetworkLibrary\NetworkLibrary\obj\Debug\NetworkLibrary.dll
+c:\users\david\documents\visual studio 2013\Projects\NetworkLibrary\NetworkLibrary\obj\Debug\NetworkLibrary.pdb
+C:\Users\David\Documents\Visual Studio 2013\Projects\NetworkLibrary\NetworkLibrary\bin\Debug\UnityEditor.dll
+C:\Users\David\Documents\Visual Studio 2013\Projects\NetworkLibrary\NetworkLibrary\bin\Debug\UnityEngine.dll
+C:\Users\David\Documents\Visual Studio 2013\Projects\NetworkLibrary\NetworkLibrary\bin\Debug\Mono.Cecil.dll
+C:\Users\David\Documents\Visual Studio 2013\Projects\NetworkLibrary\NetworkLibrary\bin\Debug\Unity.SerializationLogic.dll
+C:\Users\David\Documents\Visual Studio 2013\Projects\NetworkLibrary\NetworkLibrary\bin\Debug\Unity.DataContract.dll
+C:\Users\David\Documents\Visual Studio 2013\Projects\NetworkLibrary\NetworkLibrary\bin\Debug\ICSharpCode.NRefactory.dll
+C:\Users\David\Documents\Visual Studio 2013\Projects\NetworkLibrary\NetworkLibrary\bin\Debug\Unity.UNetWeaver.dll
+C:\Users\David\Documents\Visual Studio 2013\Projects\NetworkLibrary\NetworkLibrary\bin\Debug\Unity.CecilTools.dll
+C:\Users\David\Documents\Visual Studio 2013\Projects\NetworkLibrary\NetworkLibrary\bin\Debug\Mono.Cecil.Pdb.dll
+C:\Users\David\Documents\Visual Studio 2013\Projects\NetworkLibrary\NetworkLibrary\bin\Debug\Mono.Cecil.Mdb.dll
+C:\Users\David\Documents\Visual Studio 2013\Projects\NetworkLibrary\NetworkLibrary\bin\Debug\UnityEditor.xml
+C:\Users\David\Documents\Visual Studio 2013\Projects\NetworkLibrary\NetworkLibrary\bin\Debug\UnityEngine.xml

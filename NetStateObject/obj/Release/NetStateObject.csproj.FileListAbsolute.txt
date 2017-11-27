@@ -1,0 +1,4 @@
+C:\Users\David\Documents\Visual Studio 2015\Projects\NetworkLibrary\NetStateObject\bin\Release\NetStateObject.dll
+C:\Users\David\Documents\Visual Studio 2015\Projects\NetworkLibrary\NetStateObject\bin\Release\NetStateObject.pdb
+C:\Users\David\Documents\Visual Studio 2015\Projects\NetworkLibrary\NetStateObject\obj\Release\NetStateObject.dll
+C:\Users\David\Documents\Visual Studio 2015\Projects\NetworkLibrary\NetStateObject\obj\Release\NetStateObject.pdb

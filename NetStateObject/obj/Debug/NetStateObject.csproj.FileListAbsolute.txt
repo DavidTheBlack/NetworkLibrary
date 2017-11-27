@@ -1,0 +1,5 @@
+C:\Users\David\Documents\Visual Studio 2015\Projects\NetworkLibrary\NetStateObject\obj\Debug\NetStateObject.csprojResolveAssemblyReference.cache
+C:\Users\David\Documents\Visual Studio 2015\Projects\NetworkLibrary\NetStateObject\bin\Debug\NetStateObject.dll
+C:\Users\David\Documents\Visual Studio 2015\Projects\NetworkLibrary\NetStateObject\bin\Debug\NetStateObject.pdb
+C:\Users\David\Documents\Visual Studio 2015\Projects\NetworkLibrary\NetStateObject\obj\Debug\NetStateObject.dll
+C:\Users\David\Documents\Visual Studio 2015\Projects\NetworkLibrary\NetStateObject\obj\Debug\NetStateObject.pdb

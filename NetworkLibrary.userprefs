@@ -1,0 +1,14 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="NetworkLibrary\NetworkLibrary.cs">
+    <Files>
+      <File FileName="NetworkLibrary\NetObject.cs" Line="3" Column="3" />
+      <File FileName="NetworkLibrary\NetworkLibrary.cs" Line="12" Column="7" />
+      <File FileName="NetworkLibrary\NetworkLibraryMessages.cs" Line="3" Column="3" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>

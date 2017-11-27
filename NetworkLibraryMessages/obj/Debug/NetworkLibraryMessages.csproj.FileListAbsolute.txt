@@ -1,0 +1,10 @@
+C:\Users\David\Documents\Visual Studio 2013\Projects\NetworkLibrary\NetworkLibraryMessages\bin\Debug\NetworkLibraryMessages.dll
+C:\Users\David\Documents\Visual Studio 2013\Projects\NetworkLibrary\NetworkLibraryMessages\bin\Debug\NetworkLibraryMessages.pdb
+C:\Users\David\Documents\Visual Studio 2013\Projects\NetworkLibrary\NetworkLibraryMessages\obj\Debug\NetworkLibraryMessages.csprojResolveAssemblyReference.cache
+C:\Users\David\Documents\Visual Studio 2013\Projects\NetworkLibrary\NetworkLibraryMessages\obj\Debug\NetworkLibraryMessages.dll
+C:\Users\David\Documents\Visual Studio 2013\Projects\NetworkLibrary\NetworkLibraryMessages\obj\Debug\NetworkLibraryMessages.pdb
+C:\Users\David\Documents\Visual Studio 2015\Projects\NetworkLibrary\NetworkLibraryMessages\bin\Debug\NetworkLibraryMessages.dll
+C:\Users\David\Documents\Visual Studio 2015\Projects\NetworkLibrary\NetworkLibraryMessages\bin\Debug\NetworkLibraryMessages.pdb
+C:\Users\David\Documents\Visual Studio 2015\Projects\NetworkLibrary\NetworkLibraryMessages\obj\Debug\NetworkLibraryMessages.csprojResolveAssemblyReference.cache
+C:\Users\David\Documents\Visual Studio 2015\Projects\NetworkLibrary\NetworkLibraryMessages\obj\Debug\NetworkLibraryMessages.dll
+C:\Users\David\Documents\Visual Studio 2015\Projects\NetworkLibrary\NetworkLibraryMessages\obj\Debug\NetworkLibraryMessages.pdb
