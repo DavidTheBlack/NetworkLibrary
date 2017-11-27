@@ -4,9 +4,9 @@ namespace NetworkLibraryMessages
 {
     static public class NetMessages
     {
-        /*Application Protocol Messages*/
+        //Application Protocol Packet Type
         //[packet Header][Payload Type]|[data1]|...|[dataN]|[packet Trailer]
-        //
+
         //Data packet
         //<D|user1|user2|user3|groundAccX|groundAccY|groundAccZ>
 
@@ -35,9 +35,6 @@ namespace NetworkLibraryMessages
         /// </summary>
         public static string protocolHeader = "P";
 
-
-
-        
         /// <summary>
         /// Header used to comunicate the starting of the experiment
         /// </summary>
@@ -48,25 +45,44 @@ namespace NetworkLibraryMessages
         /// </summary>
         public static string stopSignal = "Stop";
 
-        //data separator
+        /// <summary>
+        /// Data separator
+        /// </summary>
         public static string token = "|";
 
-        //Message sent to accept a Conection
+        /// <summary>
+        /// Message sent to accept the connection
+        /// </summary>
         public static string connectionAccepted = "ConnectionAccepted";
 
-        //Message sent to comunicate the endpoint disconnection
+        /// <summary>
+        /// Message sent to comunicate the endpoint disconnection 
+        /// </summary>
         public static string disconnectRequest =  "Disconnect";
 
-        //Message sent to comunicate that the player is lost
-        public static string playerIsLost = "PlayerLost";
+        /// <summary>
+        /// Message sent to comunicate that the user is lost
+        /// </summary>
+        public static string userLost = "UserLost";
 
-        //Communicate to load the intro envinronment
+        /// <summary>
+        /// Message sent to communicate that the user has been recognized
+        /// </summary>
+        public static string userRecognized = "UserRecognized";
+
+        /// <summary>
+        /// Communicate to load the intro envinronment
+        /// </summary>
         public static string loadIntro = "LoadIntro";
 
-        //Communicate to load the outdoor envinronment
+        /// <summary>
+        /// Communicate to load the outdoor envinronment 
+        /// </summary>
         public static string loadOutdoor = "LoadOutdoor";
 
-        //Communicate to load the indoor envinronment
+        /// <summary>
+        /// Communicate to load the indoor envinronment
+        /// </summary>
         public static string loadIndoor = "LoadIndoor";
 
 
