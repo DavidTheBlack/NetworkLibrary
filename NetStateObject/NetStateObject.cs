@@ -30,5 +30,13 @@ namespace NetworkStateObject
         {
             this._bufferSize = bufferSize;
         }
+
+        public bool isConnected()
+        {
+            if (socket != null)
+                return socket.Connected;
+            else
+                return false;
+        }
     }
 }

@@ -26,9 +26,14 @@ namespace NetworkLibraryMessages
         public static string packetTrailer = ">";
 
         /// <summary>
-        /// header used for sending data (user position and table acceleration
+        /// header used by server for sending data to client (user position and table acceleration)
         /// </summary>
         public static string dataPayload = "D";
+
+        /// <summary>
+        /// header used by acceleometer client to send data to server
+        /// </summary>
+        public static string accelerationPayload = "A";
 
         /// <summary>
         /// Header used for sending protocol message

@@ -14,59 +14,77 @@ namespace NetworkObj
 {
     public class NetworkObject
     {
+
+        #region proprieties
         private string _locHostName;
         private IPAddress[] _localAddresses;
         private IPAddress _localAddressV4;
         public IPAddress localAddressV4
         {
             get { return _localAddressV4; }
-        }                                
+        }
 
-        //Listening connection port
+        
+        /// <summary>
+        /// Listening connection port
+        /// </summary>
         private int _localPort;
 
-        //Remote Socket Serve avere anche questo handler per la trasmissione sincrona
+        /// <summary>
+        /// Remote Socket 
+        /// </summary>
         private Socket _remote;
 
-        //Remote IP
         private string _remoteIP;
+        /// <summary>
+        /// Remote IP
+        /// </summary>
         public string remoteIP
         {
             get { return _remoteIP; }
             set { _remoteIP = value; }
         }
-        //Remote Port
+        
         private int _remotePort;
+        /// <summary>
+        /// Remote Port
+        /// </summary>
         public int remotePort
         {
             get { return _remotePort; }
             set { _remotePort = value; }
         }
-
-        //Socket asincrono
-        private Socket _listener;
+        
         private bool _remoteIsConnected = false;
+        /// <summary>
+        /// State of the connection
+        /// </summary>
         public bool remoteIsConnected
         {
             get { return this._remoteIsConnected; }
         }
-
-        //Used to log special event
+        
         private string _log = string.Empty;
+        /// <summary>
+        /// Used to log special event
+        /// </summary>
         public string log
         {
             get { return _log; }
         }
 
-        //Stringa ricevuta
         private string _receivedMex = string.Empty;
+        /// <summary>
+        /// Received message
+        /// </summary>
         public string receivedMex
         {
             get { return _receivedMex; }
         }
 
-              
-        #region Events
+        #endregion
+
+        #region events
 
 
         /// <summary>
@@ -79,14 +97,11 @@ namespace NetworkObj
         protected virtual void OnConnectionStateChanged()
         {
             //Aggiorno lo stato della connessione tcp
-            if (this._remoteIsConnected==true)
-            {
-                this._remoteIsConnected = false;
-            }else
-            {
-                this._remoteIsConnected = true;
-            }
-            
+            if (this._remote != null)            
+                _remoteIsConnected = _remote.Connected;
+            else
+                _remoteIsConnected = false;
+                       
             if (connectionStateChanged != null)
             {
                 connectionStateChanged(this, EventArgs.Empty);
@@ -108,26 +123,24 @@ namespace NetworkObj
 
         #endregion
 
-
-
         #region methods
-        //Constructor as server
-        public NetworkObject(int port)
-        {
-            this._localPort = port;
-        }
 
-        //Constructor as client
-        public NetworkObject(string ip, int port)
+        /// <summary>
+        /// Use this constructor if you want to create a network object acting as a server
+        /// The object start immediately to wait fo a connection from one client
+        /// </summary>
+        /// <param name="localPort">Local tcp port opened</param>
+        public NetworkObject(int localPort)
         {
-            _remoteIP = ip;
-            _remotePort = port;
+            this._localPort = localPort;
+            WaitForTcpConnection();
+
         }
 
         /// <summary>
-        /// Funzione che mette in ascolto l'oggetto in attesa di connessioni TCP 
+        /// Methods to put the object in "wait for connection" state 
         /// </summary>
-        public void waitForTcpConnection()
+        public void WaitForTcpConnection()
         {
 
             try
@@ -147,76 +160,50 @@ namespace NetworkObj
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error trying to get local address {0}", ex.ToString());
+                _log = "Error trying to get local address; " + ex.ToString();
             }
 
             // Verify we got an IP address. Tell the user if we did
             if (_localAddressV4 == null)
             {
-                Console.WriteLine("Unable to get local address");
-                return;
+                _log = "Unable to get local address";
+                throw new Exception();
             }
 
-            //Edit hai reso listener privato a livello di classe
-            //Create a new listener socket on localPort and localAddress
-            _listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-
-
-            _listener.Bind(new IPEndPoint(_localAddressV4, _localPort));
-            _listener.Listen(1); //Accetta connessioni da un solo socket per volta
-            _listener.BeginAccept(new AsyncCallback(this.TcpConnectionCallbackServer), _listener);
+            //Instantiate the local socket 
+            _remote = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            _remote.Bind(new IPEndPoint(_localAddressV4, _localPort));
+            _remote.Listen(1); //Accept 1 client connection per time
+            _remote.BeginAccept(new AsyncCallback(this.TcpConnectionCallbackServer), _remote);
 
 
         }
 
         /// <summary>
-        /// Funzione che inizializza una connessione tcp come client
+        /// Finalizza la connessione, quando la connessione TCP è stabilita solleva evento OnConnectionStateChanged
         /// </summary>
-        public void OpenTcpConnection()
+        /// <param name="ar"></param>
+        private void TcpConnectionCallbackServer(IAsyncResult ar)
         {
             try
             {
-                //Create the remote endpoint for the socket
-                IPEndPoint remoteEP = new IPEndPoint(IPAddress.Parse(_remoteIP), _remotePort);
-                ////Create TCP/IP socket
-                //netobj.clientSocket= new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                ////Start connection to remote endpoint
-                //netobj.clientSocket.BeginConnect(remoteEP, new AsyncCallback(TcpConnectionCallback), netobj);
-                //Crea socket verso server
-                Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                //avvia connessione verso endpoint remoto
-                socket.BeginConnect(remoteEP, new AsyncCallback(TcpConnectionCallbackClient), socket);
-            }
-            catch (Exception ex)
-            {
-                this._log = "Server is not active. \n Please start server and try again. \n" + ex.ToString();
-            }
-        }
+                Socket listener = (Socket)ar.AsyncState;
+                Socket handler = listener.EndAccept(ar);
+                //Raise the connection state change event
+                OnConnectionStateChanged();
 
+                this._log = "Connection created";
 
-        private void TcpConnectionCallbackClient(IAsyncResult ar)
-        {
-            try
-            {
-                //Retrive network information
-                Socket handler = (Socket)ar.AsyncState;
-
-                //complete the connections
-                handler.EndConnect(ar);
-                //Salva handler
-                this._remote = handler;
                 NetStateObject netStateObject = new NetStateObject();
                 netStateObject.socket = handler;
 
-                //Start to listen for data from the server
+                //Begin receive for remote messages
                 handler.BeginReceive(netStateObject.recBuffer, 0, netStateObject.bufferSize, 0,
-                    new AsyncCallback(ReceiveCallback), netStateObject);
+                new AsyncCallback(ReceiveCallback), netStateObject);
 
-                this._log = "Connection created";
-                //Segnalo avvenuta connessione al server
-                OnConnectionStateChanged();
-                //Attendo 1,5sec prima di ritornare
-                System.Threading.Thread.Sleep(1500);
+                //Wait 0.5sec before return
+                System.Threading.Thread.Sleep(500);
+
             }
             catch (Exception ex)
             {
@@ -227,25 +214,77 @@ namespace NetworkObj
 
 
         /// <summary>
-        /// Finalizza la connessione, quando la connessione TCP è stabilita solleva evento OnConnectionStateChanged
+        /// Use this constructor if you want to create a client network object
+        /// The object start immediately a connection to the server
+        /// </summary>
+        /// <param name="remoteIp"> Ip of the server</param>
+        /// <param name="remotePort"> tcp port of the server</param>
+        public NetworkObject(string remoteIp, int remotePort)
+        {
+            _remoteIP = remoteIp;
+            _remotePort = remotePort;
+            this.OpenTcpConnection();
+
+
+        }
+
+        /// <summary>
+        /// Methods to start connection to a server
+        /// </summary>
+        public void OpenTcpConnection()
+        {
+            try
+            {
+                //Create the remote endpoint for the socket
+                IPEndPoint remoteEP = new IPEndPoint(IPAddress.Parse(_remoteIP), _remotePort);
+                ////Create TCP/IP socket
+                _remote = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                ////Start connection to remote endpoint
+                _remote.BeginConnect(remoteEP, new AsyncCallback(TcpConnectionCallbackClient), _remote);
+            }
+            catch (Exception ex)
+            {
+                this._log = "Server is not active. \n Please start server and try again. \n" + ex.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Terminate the connection as client and start listening for protocol messages
         /// </summary>
         /// <param name="ar"></param>
-        private void TcpConnectionCallbackServer(IAsyncResult ar)
+        private void TcpConnectionCallbackClient(IAsyncResult ar)
         {
-            Socket listener = (Socket)ar.AsyncState;
-            Socket handler = listener.EndAccept(ar);
-            //Salvo il socket per poterlo usare per inviare dati in maniera sincrona
-            this._remote = handler;
+            try
+            {
+                //Retrive socket information
+                Socket handler = (Socket)ar.AsyncState;
 
+                //complete the connections
+                handler.EndConnect(ar);
 
-            NetStateObject netStateObject = new NetStateObject();
-            netStateObject.socket = handler;
-            //Mette in ascolto l'oggetto per comunicazioni 
-            handler.BeginReceive(netStateObject.recBuffer, 0, netStateObject.bufferSize, 0,
-                new AsyncCallback(ReceiveCallback), netStateObject);
+                //Raise the connection state change event
+                OnConnectionStateChanged();
 
-            this.OnConnectionStateChanged();
+                this._log = "Connection created";
+
+                NetStateObject netStateObject = new NetStateObject();
+                netStateObject.socket = handler;
+
+                //Start to listen for data from the server
+                handler.BeginReceive(netStateObject.recBuffer, 0, netStateObject.bufferSize, 0,
+                    new AsyncCallback(ReceiveCallback), netStateObject);
+
+                //Wait 0.5sec before return
+                System.Threading.Thread.Sleep(500);
+            }
+            catch (Exception ex)
+            {
+                this._log = "Error: " + ex.Message;
+            }
         }
+
+
+    //@TODO Continue modify from here onward!
 
         //Async received data callback method
         private void ReceiveCallback(IAsyncResult ar)
