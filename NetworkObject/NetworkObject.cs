@@ -123,7 +123,7 @@ namespace NetworkObj
 
         #endregion
 
-        #region methods
+        #region network methods
 
         /// <summary>
         /// Use this constructor if you want to create a network object acting as a server
@@ -134,6 +134,21 @@ namespace NetworkObj
         {
             this._localPort = localPort;
             WaitForTcpConnection();
+
+        }
+
+        /// <summary>
+        /// Use this constructor if you want to create a client network object
+        /// The object start immediately a connection to the server
+        /// </summary>
+        /// <param name="remoteIp"> Ip of the server</param>
+        /// <param name="remotePort"> tcp port of the server</param>
+        public NetworkObject(string remoteIp, int remotePort)
+        {
+            this._remoteIP = remoteIp;
+            this._remotePort = remotePort;
+            this.OpenTcpConnection();
+
 
         }
 
@@ -212,21 +227,6 @@ namespace NetworkObj
         }
 
         /// <summary>
-        /// Use this constructor if you want to create a client network object
-        /// The object start immediately a connection to the server
-        /// </summary>
-        /// <param name="remoteIp"> Ip of the server</param>
-        /// <param name="remotePort"> tcp port of the server</param>
-        public NetworkObject(string remoteIp, int remotePort)
-        {
-            this._remoteIP = remoteIp;
-            this._remotePort = remotePort;
-            this.OpenTcpConnection();
-
-
-        }
-
-        /// <summary>
         /// Methods to start connection to a server
         /// </summary>
         public void OpenTcpConnection()
@@ -281,7 +281,6 @@ namespace NetworkObj
             }
         }
 
-
         /// <summary>
         /// Async received data callback method
         /// </summary>
@@ -335,7 +334,6 @@ namespace NetworkObj
             }
         }
 
-        //@TODO continue from here!
         /// <summary>
         /// Funzione usata per spedire messaggi di protocollo
         /// </summary>
@@ -344,11 +342,13 @@ namespace NetworkObj
         {
             if (this._remote.Connected)
             {
-                string message = NetMessages.messageHeader + NetMessages.token + mess + NetMessages.token + NetMessages.messageTrailer;
+                string message = NetMessages.packetHeader + NetMessages.messagePayload + NetMessages.token + mess + NetMessages.packetTrailer;
                 byte[] sendingData = System.Text.Encoding.ASCII.GetBytes(message);
                 try
-                {
-                    this._remote.Send(sendingData, sendingData.Length, 0);
+                {                
+                    // Begin sending the data to the remote device.  
+                    _remote.BeginSend(sendingData, 0, sendingData.Length, 0,
+                        new AsyncCallback(SendCallback), _remote);
                 }
                 catch (Exception ex)
                 {
@@ -358,28 +358,75 @@ namespace NetworkObj
         }
 
         /// <summary>
-        /// Funzione usata per spedire i valori dell'accelerazione dell'ambiente
+        /// Methods used to send user position and ground acceleration to the virtual environment
         /// </summary>
-        /// <param name="data1">Primo dato</param>
-        /// <param name="data2">Secondo dato</param>
-        /// <param name="data3">Terzo dato</param>
-        public void SendAccelerationData(float data1, float data2, float data3)
+        /// <param name="userX">User X Position </param>
+        /// <param name="userY">User Y Position </param>
+        /// <param name="userZ">User Z Position </param>
+        /// <param name="groundX">Ground X Acceleration </param>
+        /// <param name="groundY">Ground Y Acceleration </param>
+        /// <param name="groundZ">Ground Z Acceleration </param>
+        public void SendData(float userX, float userY, float userZ, float groundX, float groundY, float groundZ)
         {
             if (this._remote.Connected)
             {
-                string message = NetMessages.accelerationHeader + NetMessages.token + data1.ToString(CultureInfo.InvariantCulture) + NetMessages.token + data2.ToString(CultureInfo.InvariantCulture) + NetMessages.token + data3.ToString(CultureInfo.InvariantCulture) + NetMessages.token + NetMessages.messageTrailer;
-                Byte[] sendingData = System.Text.Encoding.ASCII.GetBytes(message);
+                string message = NetMessages.packetHeader + NetMessages.dataPayload + NetMessages.token +
+                    userX + NetMessages.token + userY + NetMessages.token + userZ + NetMessages.token +
+                    groundX + NetMessages.token + groundY + NetMessages.token + groundZ + NetMessages.token +
+                    NetMessages.packetTrailer;
+                byte[] sendingData = System.Text.Encoding.ASCII.GetBytes(message);
                 try
                 {
-                    this._remote.Send(sendingData, sendingData.Length, 0);
+                    // Begin sending the data to the remote device.  
+                    _remote.BeginSend(sendingData, 0, sendingData.Length, 0,
+                        new AsyncCallback(SendCallback), _remote);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Error trying to send data {0}", ex.ToString());
+                    Console.WriteLine("Error trying to send message {0}", ex.ToString());
                 }
-
             }
         }
+
+        private static void SendCallback(IAsyncResult ar)
+        {
+            try
+            {
+                // Retrieve the socket from the state object.  
+                Socket handler = (Socket)ar.AsyncState;
+
+                // Complete sending the data to the remote device.  
+                int bytesSent = handler.EndSend(ar);
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Close the tcp connection
+        /// </summary>
+        public void closeConnection()
+        {
+            if (this._remoteIsConnected)
+            {
+                //Segnalo connessione disconnessione del client
+                this._remote.Shutdown(SocketShutdown.Both);
+                this._remote.Close();
+                this._remote = null;
+
+                this.OnConnectionStateChanged();
+            }
+        }
+
+
+
+        #endregion
+
+
+        // Move the following two methods in the server code
 
         /// <summary>
         /// Funzione usata per spedire parametri della simulazione
@@ -416,72 +463,10 @@ namespace NetworkObj
             }
         }
 
-        /// <summary>
-        /// Funzione usata per spedire posizione utente
-        /// </summary>
-        /// <param name="data1">Primo dato</param>
-        /// <param name="data2">Secondo dato</param>
-        /// <param name="data3">Terzo dato</param>
-        public void SendKinectData(float data1, float data2, float data3)
-        {
-            if (this._remote.Connected)
-            {
-                string message = NetMessages.userPositionHeader + NetMessages.token + data1.ToString(CultureInfo.InvariantCulture) + NetMessages.token + data2.ToString(CultureInfo.InvariantCulture) + NetMessages.token + data3.ToString(CultureInfo.InvariantCulture) + NetMessages.token + NetMessages.messageTrailer;
-                Byte[] sendingData = System.Text.Encoding.ASCII.GetBytes(message);
-                try
-                {
-                    this._remote.Send(sendingData, sendingData.Length, 0);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Error trying to send data {0}", ex.ToString());
-                }
-
-            }
-        }
-
-        public int SendVarData( string mex )
-        {
-            int total = 0;
-            int size = mex.Length;
-            int dataleft = size;
-            int sent;
-            Byte[] dataSize = System.Text.Encoding.ASCII.GetBytes(size.ToString());
-            Byte[] data = System.Text.Encoding.ASCII.GetBytes(mex.ToString());
 
 
-            sent = _remote.Send(dataSize);
 
-            sent = _remote.Send(data);
 
-            //while (total < size)
-            //{
-            //    sent = _remote.Send(data, total, dataleft, SocketFlags.None);
-            //    total += sent;
-            //    dataleft -= sent;
-            //}
-            return sent;
-
-        }
-
-        /// <summary>
-        /// Close the tcp connection
-        /// </summary>
-        public void closeConnection()
-        {
-            if (this._remoteIsConnected)
-            {
-                //Segnalo connessione disconnessione del client
-                this._remote.Shutdown(SocketShutdown.Both);
-                this._remote.Disconnect(true);
-                this._remote.Close();
-                this._remote = null;
-
-                this.OnConnectionStateChanged();
-            }
-        }
-        
-        #endregion
     }
 }
 

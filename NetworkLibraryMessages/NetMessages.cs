@@ -36,9 +36,9 @@ namespace NetworkLibraryMessages
         public static string accelerationPayload = "A";
 
         /// <summary>
-        /// Header used for sending protocol message
+        /// Header used for sending message
         /// </summary>
-        public static string protocolHeader = "P";
+        public static string messagePayload = "M";
 
         /// <summary>
         /// Header used to comunicate the starting of the experiment
