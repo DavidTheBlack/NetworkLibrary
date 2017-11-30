@@ -5,7 +5,7 @@ namespace NetworkLibraryMessages
     static public class NetMessages
     {
         //Application Protocol Packet Type
-        //[packet Header][Payload Type]|[data1]|...|[dataN]|[packet Trailer]
+        //[packet Header][Payload Type]|[data1]|...|[dataN][packet Trailer]
 
         //Data packet
         //<D|user1|user2|user3|groundAccX|groundAccY|groundAccZ>

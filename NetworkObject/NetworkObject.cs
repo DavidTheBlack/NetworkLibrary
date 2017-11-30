@@ -146,35 +146,35 @@ namespace NetworkObj
             try
             {
                 //Resolve the host name
-                _locHostName = Dns.GetHostName();
+                this._locHostName = Dns.GetHostName();
                 //Get all IP addresses of the host 
-                _localAddresses = Dns.GetHostAddresses(_locHostName);
+                this._localAddresses = Dns.GetHostAddresses(_locHostName);
                 //keep the first IPv4 Address from the configuration
                 for (int i = 0; i < _localAddresses.Length; i++)
                 {
                     if (IPAddress.Parse(_localAddresses[i].ToString()).AddressFamily == AddressFamily.InterNetwork)
                     {
-                        _localAddressV4 = _localAddresses[i];
+                        this._localAddressV4 = _localAddresses[i];
                     }
                 }
             }
             catch (Exception ex)
             {
-                _log = "Error trying to get local address; " + ex.ToString();
+                this._log = "Error trying to get local address; " + ex.ToString();
             }
 
             // Verify we got an IP address. Tell the user if we did
             if (_localAddressV4 == null)
             {
-                _log = "Unable to get local address";
+                this._log = "Unable to get local address";
                 throw new Exception();
             }
 
             //Instantiate the local socket 
-            _remote = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            _remote.Bind(new IPEndPoint(_localAddressV4, _localPort));
-            _remote.Listen(1); //Accept 1 client connection per time
-            _remote.BeginAccept(new AsyncCallback(this.TcpConnectionCallbackServer), _remote);
+            this._remote = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            this._remote.Bind(new IPEndPoint(_localAddressV4, _localPort));
+            this._remote.Listen(1); //Accept 1 client connection per time
+            this._remote.BeginAccept(new AsyncCallback(this.TcpConnectionCallbackServer), _remote);
 
 
         }
@@ -190,7 +190,7 @@ namespace NetworkObj
                 Socket listener = (Socket)ar.AsyncState;
                 Socket handler = listener.EndAccept(ar);
                 //Raise the connection state change event
-                OnConnectionStateChanged();
+                this.OnConnectionStateChanged();
 
                 this._log = "Connection created";
 
@@ -211,8 +211,6 @@ namespace NetworkObj
             }
         }
 
-
-
         /// <summary>
         /// Use this constructor if you want to create a client network object
         /// The object start immediately a connection to the server
@@ -221,8 +219,8 @@ namespace NetworkObj
         /// <param name="remotePort"> tcp port of the server</param>
         public NetworkObject(string remoteIp, int remotePort)
         {
-            _remoteIP = remoteIp;
-            _remotePort = remotePort;
+            this._remoteIP = remoteIp;
+            this._remotePort = remotePort;
             this.OpenTcpConnection();
 
 
@@ -238,9 +236,9 @@ namespace NetworkObj
                 //Create the remote endpoint for the socket
                 IPEndPoint remoteEP = new IPEndPoint(IPAddress.Parse(_remoteIP), _remotePort);
                 ////Create TCP/IP socket
-                _remote = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                this._remote = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 ////Start connection to remote endpoint
-                _remote.BeginConnect(remoteEP, new AsyncCallback(TcpConnectionCallbackClient), _remote);
+                this._remote.BeginConnect(remoteEP, new AsyncCallback(TcpConnectionCallbackClient), _remote);
             }
             catch (Exception ex)
             {
@@ -263,7 +261,7 @@ namespace NetworkObj
                 handler.EndConnect(ar);
 
                 //Raise the connection state change event
-                OnConnectionStateChanged();
+                this.OnConnectionStateChanged();
 
                 this._log = "Connection created";
 
@@ -284,47 +282,51 @@ namespace NetworkObj
         }
 
 
-    //@TODO Continue modify from here onward!
-
-        //Async received data callback method
+        /// <summary>
+        /// Async received data callback method
+        /// </summary>
+        /// <param name="ar">async parameter</param>
         private void ReceiveCallback(IAsyncResult ar)
         {
             try
             {
                 //Retrieve the NetObject and the client socket from the asynchronous state object
-                NetStateObject netSatetObj = (NetStateObject)ar.AsyncState;
-                Socket handler = netSatetObj.socket;
+                NetStateObject netStateObj = (NetStateObject)ar.AsyncState;
+                Socket handler = netStateObj.socket;
                 //read data from the remote server
                 int bytesRead = handler.EndReceive(ar);
 
                 if (bytesRead > 0)
                 {
-                    // Versione string builder
-                    //netObj.receivedMex.Append(Encoding.ASCII.GetString(netObj.recBuffer, 0, bytesRead));
 
-                    netSatetObj.receivedMex = Encoding.ASCII.GetString(netSatetObj.recBuffer, 0, bytesRead);
-
-                    // Verifico che il messaggio sia arrivato tutto cercando il trailer
-                    string recMex = netSatetObj.receivedMex.ToString();
-
-                    if (recMex.IndexOf(NetMessages.messageTrailer) > -1)
+                    //There might be more data, so store the data received so far 
+                    netStateObj.receivedMex_Sb.Append(Encoding.ASCII.GetString(netStateObj.recBuffer, 0, bytesRead));
+                    //Check if there is a complete message string
+                    string recMex = netStateObj.receivedMex_Sb.ToString();
+                    //first occurence of trailer starting from end of message
+                    int trailerPosition = recMex.IndexOf(NetMessages.packetTrailer);
+                    //last occurence of the header starting from the first trailer, in this way I'm sure to read
+                    //messages from the first to the last received
+                    int headerPosition = recMex.LastIndexOf(NetMessages.packetHeader,trailerPosition);
+                    
+                    //if there is a complete messages elaborate it and delete from the string builder of temp object
+                    if (headerPosition > -1 && trailerPosition > -1) 
                     {
-                        //Se l'intero messaggio è arrivato allora lo rendo disponibile in uscita e sollevo evento
-                        this._receivedMex = recMex;
+                        int length = trailerPosition - headerPosition + 1;
+                        
+                        //Extrapulate the message
+                        lock(this)
+                        {
+                            this._receivedMex = recMex.Substring(headerPosition, length);
+                            //Delete the entire message from the string builder
+                            netStateObj.receivedMex_Sb.Remove(0, trailerPosition + 1);
+                        }
                         OnMessageReceived();
-                        /* Versione con string builder
-                            * //Svuoto il buffer di ricezione
-                            * netObj.receivedMex.Remove(0, netObj.receivedMex.Length);
-                            * */
-
-                        //Rimango in ascolto di altri messaggi
-                        netSatetObj.socket.BeginReceive(netSatetObj.recBuffer, 0, netSatetObj.bufferSize, 0, new AsyncCallback(ReceiveCallback), netSatetObj);
                     }
-                    //else
-                    //{
-                    //    //Se rimangono dati da ricevere rimane in ascolto
-                    //    netObj.socket.BeginReceive(netObj.recBuffer, 0, netObj.bufferSize, 0, new AsyncCallback(ReceiveCallback), netObj);
-                    //}
+
+                    //Waiting for new messages
+                    handler.BeginReceive(netStateObj.recBuffer, 0, netStateObj.bufferSize, 0, new AsyncCallback(ReceiveCallback), netStateObj);
+
                 }
             }
             catch (Exception ex)
@@ -333,6 +335,7 @@ namespace NetworkObj
             }
         }
 
+        //@TODO continue from here!
         /// <summary>
         /// Funzione usata per spedire messaggi di protocollo
         /// </summary>
@@ -473,10 +476,6 @@ namespace NetworkObj
                 this._remote.Disconnect(true);
                 this._remote.Close();
                 this._remote = null;
-
-                this._listener.Close();
-                this._listener = null;
-
 
                 this.OnConnectionStateChanged();
             }

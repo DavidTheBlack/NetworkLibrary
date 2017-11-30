@@ -1,4 +1,5 @@
 ﻿using System.Net.Sockets;
+using System.Text;
 
 namespace NetworkStateObject
 {
@@ -8,7 +9,7 @@ namespace NetworkStateObject
         //Client Socket
         public Socket socket = null;
         //Size of receive Buffer
-        private int _bufferSize = 128;
+        private int _bufferSize = 256;
         public int bufferSize
         {
             get { return _bufferSize; }
@@ -16,9 +17,12 @@ namespace NetworkStateObject
 
         //Receive Buffer
         public byte[] recBuffer;
+        
         //Received data String
         public string receivedMex = string.Empty;
-        //public StringBuilder receivedMex = new StringBuilder();
+
+        // Received data string.  
+        public StringBuilder receivedMex_Sb = new StringBuilder();
 
         public NetStateObject()
         {
@@ -31,12 +35,5 @@ namespace NetworkStateObject
             this._bufferSize = bufferSize;
         }
 
-        public bool isConnected()
-        {
-            if (socket != null)
-                return socket.Connected;
-            else
-                return false;
-        }
     }
 }
