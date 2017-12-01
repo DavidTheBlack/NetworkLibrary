@@ -1,9 +1,0 @@
-C:\Users\David\Documents\Visual Studio 2015\Projects\NetworkLibrary\NetworkObject\bin\Release\NetworkObject.dll
-C:\Users\David\Documents\Visual Studio 2015\Projects\NetworkLibrary\NetworkObject\bin\Release\NetworkObject.pdb
-C:\Users\David\Documents\Visual Studio 2015\Projects\NetworkLibrary\NetworkObject\bin\Release\NetStateObject.dll
-C:\Users\David\Documents\Visual Studio 2015\Projects\NetworkLibrary\NetworkObject\bin\Release\NetworkLibraryMessages.dll
-C:\Users\David\Documents\Visual Studio 2015\Projects\NetworkLibrary\NetworkObject\bin\Release\NetStateObject.pdb
-C:\Users\David\Documents\Visual Studio 2015\Projects\NetworkLibrary\NetworkObject\bin\Release\NetworkLibraryMessages.pdb
-C:\Users\David\Documents\Visual Studio 2015\Projects\NetworkLibrary\NetworkObject\obj\Release\NetworkObject.csprojResolveAssemblyReference.cache
-C:\Users\David\Documents\Visual Studio 2015\Projects\NetworkLibrary\NetworkObject\obj\Release\NetworkObject.dll
-C:\Users\David\Documents\Visual Studio 2015\Projects\NetworkLibrary\NetworkObject\obj\Release\NetworkObject.pdb

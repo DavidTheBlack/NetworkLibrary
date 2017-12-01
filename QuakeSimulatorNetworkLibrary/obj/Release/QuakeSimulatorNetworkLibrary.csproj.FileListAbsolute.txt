@@ -1,0 +1,5 @@
+C:\Users\David\Documents\Visual Studio 2015\Projects\NetworkLibrary\QuakeSimulatorNetworkLibrary\bin\Release\QuakeSimulatorNetworkLibrary.dll
+C:\Users\David\Documents\Visual Studio 2015\Projects\NetworkLibrary\QuakeSimulatorNetworkLibrary\bin\Release\QuakeSimulatorNetworkLibrary.pdb
+C:\Users\David\Documents\Visual Studio 2015\Projects\NetworkLibrary\QuakeSimulatorNetworkLibrary\obj\Release\QuakeSimulatorNetworkLibrary.csprojResolveAssemblyReference.cache
+C:\Users\David\Documents\Visual Studio 2015\Projects\NetworkLibrary\QuakeSimulatorNetworkLibrary\obj\Release\QuakeSimulatorNetworkLibrary.dll
+C:\Users\David\Documents\Visual Studio 2015\Projects\NetworkLibrary\QuakeSimulatorNetworkLibrary\obj\Release\QuakeSimulatorNetworkLibrary.pdb
