@@ -5,13 +5,16 @@ namespace QuakeSimulatorNetworkLibrary
     static public class NetMessages
     {
         //Application Protocol Packet Type
-        //packetHeader + payloadType + | + data1 +[|]...[|][dataN] + packetTrailer
+        //packetHeader + | + payloadType + | + data1 +[|]...[|][dataN] + | + packetTrailer
 
         //Data packet
-        //<D|userRecognized|userPositionX|userPositionY|userPositionZ|groundAccX|groundAccY|groundAccZ|>
+        //<|D|userRecognized|userPositionX|userPositionY|userPositionZ|groundAccX|groundAccY|groundAccZ|UserRecognized|>
+
+        //Acceleration Packet
+        //<|A|xAcc|yAcc|zAcc|>
 
         // Protocol Information packet
-        //<P|[message]>
+        //<P|[message]|>
 
 
 
@@ -31,7 +34,7 @@ namespace QuakeSimulatorNetworkLibrary
         public static string dataPayload = "D";
 
         /// <summary>
-        /// header used by acceleometer client to send data to server
+        /// header used by accelerometer client to send data to server
         /// </summary>
         public static string accelerationPayload = "A";
 
@@ -41,12 +44,12 @@ namespace QuakeSimulatorNetworkLibrary
         public static string messagePayload = "M";
 
         /// <summary>
-        /// Header used to comunicate the starting of the experiment
+        /// Header used to communicate the starting of the experiment
         /// </summary>
         public static string startSignal = "Start";
 
         /// <summary>
-        /// Header used to comunicate the ending of the experiment
+        /// Header used to communicate the ending of the experiment
         /// </summary>
         public static string stopSignal = "Stop";
 
@@ -66,7 +69,12 @@ namespace QuakeSimulatorNetworkLibrary
         public static string disconnectRequest =  "Disconnect";
 
         /// <summary>
-        /// Message sent to comunicate that the user is lost
+        /// Message sent to communicate that it's ready to receive data
+        /// </summary>
+        public static string readyToReceive = "ReadyToRec";
+
+        /// <summary>
+        /// Message sent to communicate that the user is lost
         /// </summary>
         public static string userLost = "UserLost";
 

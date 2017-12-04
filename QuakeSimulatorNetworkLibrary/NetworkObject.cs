@@ -202,13 +202,13 @@ namespace QuakeSimulatorNetworkLibrary
             {
                 Socket listener = (Socket)ar.AsyncState;
                 Socket handler = listener.EndAccept(ar);
-                //Raise the connection state change event
-                this.OnConnectionStateChanged();
+                this._remote = handler;
 
                 this._log = "Connection created";
 
                 NetStateObject netStateObject = new NetStateObject();
                 netStateObject.socket = handler;
+                
 
                 //Begin receive for remote messages
                 handler.BeginReceive(netStateObject.recBuffer, 0, netStateObject.bufferSize, 0,
@@ -216,6 +216,9 @@ namespace QuakeSimulatorNetworkLibrary
 
                 //Wait 0.5sec before return
                 System.Threading.Thread.Sleep(500);
+
+                //Raise the connection state change event
+                this.OnConnectionStateChanged();
 
             }
             catch (Exception ex)
@@ -256,10 +259,7 @@ namespace QuakeSimulatorNetworkLibrary
                 Socket handler = (Socket)ar.AsyncState;
 
                 //complete the connections
-                handler.EndConnect(ar);
-
-                //Raise the connection state change event
-                this.OnConnectionStateChanged();
+                handler.EndConnect(ar);        
 
                 this._log = "Connection created";
 
@@ -272,6 +272,9 @@ namespace QuakeSimulatorNetworkLibrary
 
                 //Wait 0.5sec before return
                 System.Threading.Thread.Sleep(500);
+
+                //Raise the connection state change event
+                this.OnConnectionStateChanged();
             }
             catch (Exception ex)
             {
@@ -340,7 +343,8 @@ namespace QuakeSimulatorNetworkLibrary
         {
             if (this._remote.Connected)
             {
-                string message = NetMessages.packetHeader + NetMessages.messagePayload + NetMessages.token + mess + NetMessages.packetTrailer;
+                string message = NetMessages.packetHeader + NetMessages.token + NetMessages.messagePayload + 
+                    NetMessages.token + mess + NetMessages.token + NetMessages.packetTrailer;
                 byte[] sendingData = System.Text.Encoding.ASCII.GetBytes(message);
                 try
                 {                
@@ -364,14 +368,16 @@ namespace QuakeSimulatorNetworkLibrary
         /// <param name="groundX">Ground X Acceleration </param>
         /// <param name="groundY">Ground Y Acceleration </param>
         /// <param name="groundZ">Ground Z Acceleration </param>
-        public void SendData(float userX, float userY, float userZ, float groundX, float groundY, float groundZ)
+        /// <param name="userRecognized">User recognized Flag</param>
+        public void SendData(float userX, float userY, float userZ, float groundX, float groundY, float groundZ,bool userRecognized)
         {
             if (this._remote.Connected)
             {
-                string message = NetMessages.packetHeader + NetMessages.dataPayload + NetMessages.token +
+                string message = NetMessages.packetHeader + NetMessages.token + NetMessages.dataPayload + NetMessages.token +
                     userX + NetMessages.token + userY + NetMessages.token + userZ + NetMessages.token +
                     groundX + NetMessages.token + groundY + NetMessages.token + groundZ + NetMessages.token +
-                    NetMessages.packetTrailer;
+                    userRecognized + NetMessages.token + NetMessages.packetTrailer;
+
                 byte[] sendingData = System.Text.Encoding.ASCII.GetBytes(message);
                 try
                 {
@@ -386,13 +392,16 @@ namespace QuakeSimulatorNetworkLibrary
             }
         }
 
+        /// <summary>
+        /// Send data Callback
+        /// </summary>
+        /// <param name="ar">Async state object</param>
         private static void SendCallback(IAsyncResult ar)
         {
             try
             {
                 // Retrieve the socket from the state object.  
                 Socket handler = (Socket)ar.AsyncState;
-
                 // Complete sending the data to the remote device.  
                 int bytesSent = handler.EndSend(ar);
 
