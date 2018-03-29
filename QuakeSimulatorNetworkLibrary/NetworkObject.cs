@@ -77,7 +77,11 @@ namespace QuakeSimulatorNetworkLibrary
         /// </summary>
         public string receivedMex
         {
-            get { return _receivedMex; }
+            get {
+                lock (this) {
+                    return _receivedMex;
+                }
+            }
         }
 
         #endregion
@@ -153,7 +157,7 @@ namespace QuakeSimulatorNetworkLibrary
         /// <summary>
         /// Methods to put the object in "wait for connection" state 
         /// </summary>
-        public void WaitForTcpConnection()
+        private void WaitForTcpConnection()
         {
 
             try
@@ -230,7 +234,7 @@ namespace QuakeSimulatorNetworkLibrary
         /// <summary>
         /// Methods to start connection to a server
         /// </summary>
-        public void OpenTcpConnection()
+        private void OpenTcpConnection()
         {
             try
             {
@@ -374,8 +378,8 @@ namespace QuakeSimulatorNetworkLibrary
             if (this._remote.Connected)
             {
                 string message = NetMessages.packetHeader + NetMessages.token + NetMessages.dataPayload + NetMessages.token +
-                    userX + NetMessages.token + userY + NetMessages.token + userZ + NetMessages.token +
-                    groundX + NetMessages.token + groundY + NetMessages.token + groundZ + NetMessages.token +
+                    userX.ToString() + NetMessages.token + userY.ToString() + NetMessages.token + userZ.ToString() + NetMessages.token +
+                    groundX.ToString() + NetMessages.token + groundY.ToString() + NetMessages.token + groundZ.ToString() + NetMessages.token +
                     userRecognized + NetMessages.token + NetMessages.packetTrailer;
 
                 byte[] sendingData = System.Text.Encoding.ASCII.GetBytes(message);
@@ -406,6 +410,9 @@ namespace QuakeSimulatorNetworkLibrary
                 int bytesSent = handler.EndSend(ar);
 
             }
+
+
+
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
@@ -469,9 +476,6 @@ namespace QuakeSimulatorNetworkLibrary
                 this.SendMessage(message);
             }
         }
-
-
-
 
 
     }

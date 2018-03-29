@@ -5,16 +5,16 @@ namespace QuakeSimulatorNetworkLibrary
     static public class NetMessages
     {
         //Application Protocol Packet Type
-        //packetHeader + | + payloadType + | + data1 +[|]...[|][dataN] + | + packetTrailer
+        //packetHeader + | + payloadType + | + data1 + [|]...[|] + [dataN] + | + packetTrailer
 
         //Data packet
-        //<|D|userRecognized|userPositionX|userPositionY|userPositionZ|groundAccX|groundAccY|groundAccZ|UserRecognized|>
+        //<| D | userRecognized | userPositionX | userPositionY | userPositionZ | groundAccX | groundAccY | groundAccZ |>
 
         //Acceleration Packet
-        //<|A|xAcc|yAcc|zAcc|>
+        //<| A | xAcc | yAcc | zAcc |>
 
-        // Protocol Information packet
-        //<P|[message]|>
+        //Protocol Information packet
+        //<| M | [message] |>
 
 
 
